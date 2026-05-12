@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Covenant Manual | Silent Enforcer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Space+Mono:wght@400;700&family=Barlow:wght@300;400;500&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════
+   ROOT & RESET
+═══════════════════════════════════════ */
+:root {
+  --gold: #C8973A;
+  --gold-light: #E4B558;
+  --gold-dim: #7A5A1E;
+  --black: #060606;
+  --black-2: #0E0E0E;
+  --black-3: #141414;
+  --cream: #FFFFFF;
+  --gray: #FFFFFF;
+  --gray-light: #FFFFFF;
+  --sidebar-w: 280px;
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--black);
+  color: var(--cream);
+  font-family: 'Barlow', sans-serif;
+  font-weight: 400;
+  line-height: 1.85;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* Noise overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.4;
+}
+
+/* Reading progress bar */
+#progress {
+  position: fixed;
+  top: 0; left: 0;
+  height: 2px;
+  background: linear-gradient(to right, var(--gold-dim), var(--gold-light));
+  z-index: 10000;
+  width: 0%;
+  transition: width 0.08s linear;
+}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+.site-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ═══════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════ */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid rgba(200,151,58,0.12);
+  background: var(--black-2);
+  display: flex;
+  flex-direction: column;
+  z-index: 200;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200,151,58,0.2) transparent;
+}
+
+.sidebar::-webkit-scrollbar { width: 3px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.2); }
+
+.sidebar-header {
+  padding: 2.5rem 2rem 2rem;
+  border-bottom: 1px solid rgba(200,151,58,0.1);
+  flex-shrink: 0;
+}
+
+.sidebar-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(200,151,58,0.5);
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  text-transform: uppercase;
+  margin-bottom: 1.8rem;
+  transition: color 0.2s;
+}
+.sidebar-back:hover { color: var(--gold); }
+
+.sidebar-doc-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.6;
+  margin-bottom: 0.5rem;
+}
+
+.sidebar-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.25rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--cream);
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin-bottom: 0.8rem;
+}
+
+.sidebar-meta {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.5rem;
+  color: rgba(200,151,58,0.35);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* TOC Navigation */
+.toc {
+  flex: 1;
+  padding: 1.5rem 0;
+}
+
+.toc-item {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  padding: 0.55rem 2rem;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.toc-item:hover { background: rgba(200,151,58,0.03); border-left-color: rgba(200,151,58,0.25); }
+.toc-item.active {
+  background: rgba(200,151,58,0.05);
+  border-left-color: var(--gold);
+}
+
+.toc-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  color: rgba(200,151,58,0.4);
+  letter-spacing: 0.1em;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.toc-label {
+  font-family: 'Barlow', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: #FFFFFF;
+  letter-spacing: 0.02em;
+  line-height: 1.35;
+  transition: color 0.2s;
+}
+
+.toc-item.active .toc-num { color: var(--gold); }
+.toc-item.active .toc-label { color: var(--cream); font-weight: 400; }
+.toc-item:hover .toc-label { color: rgba(200,151,58,0.8); }
+
+.sidebar-footer {
+  padding: 1.5rem 2rem 2.5rem;
+  border-top: 1px solid rgba(200,151,58,0.1);
+  flex-shrink: 0;
+}
+
+.sidebar-cta {
+  display: block;
+  padding: 0.8rem 1.5rem;
+  background: var(--gold);
+  color: var(--black);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-align: center;
+  transition: background 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.sidebar-cta::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.4s;
+}
+.sidebar-cta:hover { background: var(--gold-light); }
+.sidebar-cta:hover::after { left: 100%; }
+
+/* ═══════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════ */
+.content-wrap {
+  margin-left: var(--sidebar-w);
+  flex: 1;
+  min-width: 0;
+}
+
+.content-inner {
+  max-width: 740px;
+  padding: 0 5rem;
+  margin: 0 auto;
+}
+
+/* ═══════════════════════════════════════
+   DOCUMENT HEADER
+═══════════════════════════════════════ */
+.doc-header {
+  padding: 7rem 0 5rem;
+  border-bottom: 1px solid rgba(200,151,58,0.12);
+  margin-bottom: 0;
+  position: relative;
+}
+
+.doc-header::before {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0;
+  width: 80px; height: 1px;
+  background: var(--gold);
+}
+
+.doc-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--gold);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.doc-eyebrow::before {
+  content: '';
+  width: 30px; height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+.doc-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(3.2rem, 6vw, 6rem);
+  font-weight: 300;
+  line-height: 1.0;
+  letter-spacing: -0.025em;
+  color: var(--cream);
+  margin-bottom: 2rem;
+}
+.doc-title em { font-style: italic; color: var(--gold); }
+
+.doc-subtitle {
+  font-size: 1rem;
+  color: var(--gray);
+  font-weight: 300;
+  max-width: 520px;
+  line-height: 1.8;
+  border-left: 2px solid rgba(200,151,58,0.3);
+  padding-left: 1.5rem;
+  font-style: italic;
+}
+
+/* ═══════════════════════════════════════
+   DOCUMENT SECTIONS
+═══════════════════════════════════════ */
+.doc-section {
+  padding: 5.5rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  filter: blur(4px);
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22,1,0.36,1), filter 0.7s ease;
+}
+.doc-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.section-num {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--gold);
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  opacity: 0.75;
+}
+.section-num::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(200,151,58,0.2), transparent);
+}
+
+.section-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(2.1rem, 3.8vw, 3.4rem);
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.2;
+  color: var(--gold);
+  margin-bottom: 2.5rem;
+  letter-spacing: -0.01em;
+}
+
+/* ═══════════════════════════════════════
+   BODY TEXT
+═══════════════════════════════════════ */
+.doc-body { margin-bottom: 1rem; }
+
+.doc-body p {
+  font-size: 1.08rem;
+  color: #FFFFFF;
+  line-height: 2.0;
+  font-weight: 400;
+  margin-bottom: 1.3rem;
+  letter-spacing: 0.01em;
+}
+.doc-body p:last-child { margin-bottom: 0; }
+
+.doc-strong { color: var(--cream); font-weight: 500; }
+.doc-gold { color: var(--gold); font-weight: 500; }
+
+/* ═══════════════════════════════════════
+   BLOCKQUOTES
+═══════════════════════════════════════ */
+.doc-blockquote {
+  border-left: 2px solid var(--gold);
+  padding: 1.2rem 2rem;
+  margin: 2.5rem 0;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.25rem, 2.2vw, 1.65rem);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--cream);
+  line-height: 1.5;
+  background: rgba(200,151,58,0.03);
+  position: relative;
+}
+
+/* ═══════════════════════════════════════
+   LISTS
+═══════════════════════════════════════ */
+.doc-list {
+  list-style: none;
+  margin: 1.5rem 0;
+}
+.doc-list li {
+  padding: 0.38rem 0 0.38rem 1.6rem;
+  position: relative;
+  color: #FFFFFF;
+  font-weight: 400;
+  font-size: 1.05rem;
+  line-height: 1.9;
+}
+.doc-list li::before {
+  content: '›';
+  position: absolute;
+  left: 0;
+  color: var(--gold);
+  opacity: 0.55;
+}
+
+/* Negative list (✗ style) */
+.doc-list.negative li::before { content: '✗'; color: #CC4444; font-size: 0.75rem; top: 0.1rem; }
+.doc-list.positive li::before { content: '✓'; color: #4CAF75; font-size: 0.75rem; top: 0.1rem; }
+
+/* Ordered steps */
+.doc-steps {
+  list-style: none;
+  counter-reset: steps;
+  margin: 2rem 0;
+  border: 1px solid rgba(200,151,58,0.1);
+  background: rgba(200,151,58,0.015);
+}
+.doc-steps li {
+  counter-increment: steps;
+  padding: 0.9rem 1.5rem 0.9rem 3.5rem;
+  position: relative;
+  color: #FFFFFF;
+  font-weight: 400;
+  font-size: 1.05rem;
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+  line-height: 1.65;
+}
+.doc-steps li:last-child { border-bottom: none; }
+.doc-steps li::before {
+  content: counter(steps, decimal-leading-zero);
+  position: absolute;
+  left: 1.2rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--gold);
+  opacity: 0.55;
+  top: 1.1rem;
+}
+
+/* ═══════════════════════════════════════
+   SUB-HEADINGS (inside sections)
+═══════════════════════════════════════ */
+.doc-sub {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin: 3.5rem 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  opacity: 0.9;
+}
+.doc-sub::before {
+  content: '';
+  width: 18px; height: 1px;
+  background: var(--gold);
+  opacity: 0.5;
+}
+
+/* ═══════════════════════════════════════
+   TERMINAL BLOCK
+═══════════════════════════════════════ */
+.doc-terminal {
+  background: #070707;
+  border: 1px solid rgba(200,151,58,0.2);
+  padding: 0;
+  margin: 2.5rem 0;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  overflow: hidden;
+}
+.doc-terminal-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.2rem;
+  border-bottom: 1px solid rgba(200,151,58,0.1);
+  background: #050505;
+}
+.t-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(200,151,58,0.25); }
+.t-dot:first-child { background: rgba(200,151,58,0.65); }
+.doc-terminal-title {
+  font-size: 0.55rem;
+  color: var(--gray);
+  letter-spacing: 0.1em;
+  margin-left: 0.4rem;
+}
+.doc-terminal-body {
+  padding: 1.4rem 1.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+.t-line { display: flex; gap: 0.8rem; align-items: baseline; }
+.t-prompt { color: var(--gold-dim); font-size: 0.8rem; flex-shrink: 0; }
+.t-jalan { color: #4CAF75; }
+.t-stall { color: #E87A3A; }
+.t-x     { color: #CC4444; }
+.t-gray  { color: var(--gray); }
+.t-gold  { color: var(--gold); }
+.t-white { color: #fff; }
+.t-comment { color: #FFFFFF; font-size: 0.72rem; padding-left: 1.2rem; }
+.t-cursor {
+  display: inline-block;
+  width: 7px; height: 13px;
+  background: var(--gold);
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ═══════════════════════════════════════
+   RULE BOX (important rules)
+═══════════════════════════════════════ */
+.doc-rule-box {
+  border: 1px solid rgba(200,151,58,0.25);
+  background: rgba(200,151,58,0.03);
+  padding: 1.8rem 2rem;
+  margin: 2.5rem 0;
+}
+.doc-rule-box-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  margin-bottom: 1rem;
+  opacity: 0.7;
+}
+.doc-rule-box p {
+  font-size: 1.0rem;
+  color: #FFFFFF;
+  line-height: 1.9;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+}
+.doc-rule-box p:last-child { margin-bottom: 0; }
+
+/* ═══════════════════════════════════════
+   TWO-COL COMPARISON
+═══════════════════════════════════════ */
+.doc-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin: 2.5rem 0;
+  border: 1px solid rgba(200,151,58,0.15);
+}
+.doc-compare-col {
+  padding: 2rem 2rem;
+  border-right: 1px solid rgba(200,151,58,0.15);
+}
+.doc-compare-col:last-child { border-right: none; }
+.doc-compare-label {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+}
+.doc-compare-label.enforcement { color: #CC4444; }
+.doc-compare-label.companion   { color: var(--gold); }
+
+/* ═══════════════════════════════════════
+   CLOSING SECTION (§14)
+═══════════════════════════════════════ */
+.doc-section.closing {
+  background: var(--black-3);
+  border-bottom: none;
+  margin: 0 -5rem;
+  padding: 7rem 5rem;
+}
+.closing-statement {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.5rem, 2.8vw, 2.2rem);
+  font-weight: 300;
+  color: var(--gray-light);
+  line-height: 1.55;
+  margin-bottom: 2rem;
+  max-width: 580px;
+}
+.closing-quote {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.6rem, 3vw, 2.6rem);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--cream);
+  line-height: 1.4;
+  padding: 2rem 0 2rem 2rem;
+  border-left: 3px solid var(--gold);
+  margin: 2.5rem 0;
+  max-width: 620px;
+}
+.closing-list {
+  list-style: none;
+  margin: 2rem 0;
+}
+.closing-list li {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.2rem;
+  font-style: italic;
+  color: rgba(200,151,58,0.65);
+  padding: 0.35rem 0 0.35rem 1.5rem;
+  position: relative;
+  line-height: 1.5;
+}
+.closing-list li::before {
+  content: '';
+  position: absolute; left: 0;
+  color: var(--gold-dim);
+}
+.closing-final {
+  margin-top: 4rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(200,151,58,0.15);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  color: #FFFFFF;
+  line-height: 1.8;
+}
+
+/* ═══════════════════════════════════════
+   FINAL CTA
+═══════════════════════════════════════ */
+.doc-cta-wrap {
+  padding: 6rem 5rem 7rem;
+  text-align: center;
+  background: var(--black-2);
+  border-top: 1px solid rgba(200,151,58,0.18);
+  margin: 0 -5rem;
+}
+.doc-cta-eyebrow {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 1.5rem;
+  display: flex; align-items: center; justify-content: center; gap: 1rem;
+}
+.doc-cta-eyebrow::before, .doc-cta-eyebrow::after { content: ''; width: 30px; height: 1px; background: var(--gold); opacity: 0.4; }
+.doc-cta-heading {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
+  font-weight: 300;
+  line-height: 1.2;
+  color: var(--cream);
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+.doc-cta-heading em { font-style: italic; color: var(--gold); }
+.doc-cta-sub {
+  font-size: 0.95rem;
+  color: var(--gray);
+  font-weight: 300;
+  margin-bottom: 3rem;
+  line-height: 1.8;
+}
+
+@keyframes ctaGlowPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,151,58,0); }
+  50%       { box-shadow: 0 0 30px rgba(200,151,58,0.45), 0 0 80px rgba(200,151,58,0.15); }
+}
+
+.btn-primary {
+  display: inline-block;
+  padding: 1.2rem 3rem;
+  background: var(--gold);
+  color: var(--black);
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  animation: ctaGlowPulse 2.8s ease-in-out infinite;
+}
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transition: left 0.5s ease;
+}
+.btn-primary:hover::after { left: 100%; }
+.btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+
+.doc-cta-back {
+  display: block;
+  margin-top: 1.5rem;
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  color: rgba(200,151,58,0.4);
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.doc-cta-back:hover { color: var(--gold); }
+
+/* ═══════════════════════════════════════
+   MOBILE NAV BAR
+═══════════════════════════════════════ */
+.mobile-nav {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 500;
+  background: var(--black-2);
+  border-bottom: 1px solid rgba(200,151,58,0.15);
+}
+.mobile-nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  height: 52px;
+}
+.mobile-back {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  color: rgba(200,151,58,0.6);
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+.mobile-doc-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.95rem;
+  font-style: italic;
+  color: var(--cream);
+}
+.toc-toggle {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.55rem;
+  color: var(--gold);
+  background: none;
+  border: 1px solid rgba(200,151,58,0.3);
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: all 0.2s;
+}
+.toc-toggle:hover { background: rgba(200,151,58,0.08); }
+
+.mobile-toc {
+  display: none;
+  border-top: 1px solid rgba(200,151,58,0.1);
+  max-height: 60vh;
+  overflow-y: auto;
+  background: var(--black-2);
+}
+.mobile-toc.open { display: block; }
+.mobile-toc .toc-item {
+  padding: 0.8rem 1.5rem;
+}
+
+/* ═══════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--black); }
+::-webkit-scrollbar-thumb { background: rgba(200,151,58,0.2); }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media (max-width: 960px) {
+  .sidebar { display: none; }
+  .mobile-nav { display: block; }
+  .content-wrap { margin-left: 0; margin-top: 52px; }
+  .content-inner { padding: 0 2rem; }
+  .doc-header { padding: 4rem 0 3.5rem; }
+  .doc-section { padding: 4rem 0; }
+  .doc-section.closing { margin: 0 -2rem; padding: 5rem 2rem; }
+  .doc-cta-wrap { margin: 0 -2rem; padding: 4rem 2rem 5rem; }
+  .doc-compare { grid-template-columns: 1fr; }
+  .doc-compare-col { border-right: none; border-bottom: 1px solid rgba(200,151,58,0.15); }
+  .doc-compare-col:last-child { border-bottom: none; }
+}
+
+@media (max-width: 480px) {
+  .doc-title { font-size: 2.6rem; }
+  .section-heading { font-size: 1.55rem; }
+  .doc-blockquote { font-size: 1.15rem; padding: 1rem 1.2rem; }
+  .closing-quote { font-size: 1.4rem; }
+}
+
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<!-- ══ MOBILE NAV ══ -->
+<div class="mobile-nav">
+  <div class="mobile-nav-bar">
+    <a href="index.html" class="mobile-back">← Silent Enforcer</a>
+    <span class="mobile-doc-title">The Covenant Manual</span>
+    <button class="toc-toggle" id="tocToggle">≡ Daftar Isi</button>
+  </div>
+  <div class="mobile-toc" id="mobileToc">
+    <a href="#s01" class="toc-item"><span class="toc-num">§ 01</span><span class="toc-label">Produk ini apa?</span></a>
+    <a href="#s02" class="toc-item"><span class="toc-num">§ 02</span><span class="toc-label">Platform & cara kerja</span></a>
+    <a href="#s03" class="toc-item"><span class="toc-num">§ 03</span><span class="toc-label">Quest Aksi Minimum Harian</span></a>
+    <a href="#s04" class="toc-item"><span class="toc-num">§ 04</span><span class="toc-label">Fase Enforcement</span></a>
+    <a href="#s05" class="toc-item"><span class="toc-num">§ 05</span><span class="toc-label">Fase Companion</span></a>
+    <a href="#s06" class="toc-item"><span class="toc-num">§ 06</span><span class="toc-label">Evaluasi & konsekuensi</span></a>
+    <a href="#s07" class="toc-item"><span class="toc-num">§ 07</span><span class="toc-label">Yang pengguna dapatkan</span></a>
+    <a href="#s08" class="toc-item"><span class="toc-num">§ 08</span><span class="toc-label">Versus habit tracker</span></a>
+    <a href="#s09" class="toc-item"><span class="toc-num">§ 09</span><span class="toc-label">Mengapa 04:00 WIB?</span></a>
+    <a href="#s10" class="toc-item"><span class="toc-num">§ 10</span><span class="toc-label">Cocok untuk siapa?</span></a>
+    <a href="#s11" class="toc-item"><span class="toc-num">§ 11</span><span class="toc-label">Hukuman atau penjaga?</span></a>
+    <a href="#s12" class="toc-item"><span class="toc-num">§ 12</span><span class="toc-label">Contoh harian & tampilan</span></a>
+    <a href="#s13" class="toc-item"><span class="toc-num">§ 13</span><span class="toc-label">Bagaimana sistem mencatat</span></a>
+    <a href="#s14" class="toc-item"><span class="toc-num">§ 14</span><span class="toc-label">Inti</span></a>
+  </div>
+</div>
+
+<!-- ══ LAYOUT ══ -->
+<div class="site-layout">
+
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <a href="index.html" class="sidebar-back">← Kembali ke Silent Enforcer</a>
+      <div class="sidebar-doc-label">Dokumen Resmi</div>
+      <div class="sidebar-title">The Covenant Manual</div>
+      <div class="sidebar-meta">v1.0 &nbsp;·&nbsp; Batch 0 &nbsp;·&nbsp; 2026</div>
+    </div>
+
+    <nav class="toc">
+      <a href="#s01" class="toc-item active"><span class="toc-num">§ 01</span><span class="toc-label">Produk ini apa?</span></a>
+      <a href="#s02" class="toc-item"><span class="toc-num">§ 02</span><span class="toc-label">Platform & cara kerja</span></a>
+      <a href="#s03" class="toc-item"><span class="toc-num">§ 03</span><span class="toc-label">Quest Aksi Minimum Harian</span></a>
+      <a href="#s04" class="toc-item"><span class="toc-num">§ 04</span><span class="toc-label">Fase Enforcement</span></a>
+      <a href="#s05" class="toc-item"><span class="toc-num">§ 05</span><span class="toc-label">Fase Companion</span></a>
+      <a href="#s06" class="toc-item"><span class="toc-num">§ 06</span><span class="toc-label">Evaluasi & konsekuensi</span></a>
+      <a href="#s07" class="toc-item"><span class="toc-num">§ 07</span><span class="toc-label">Yang pengguna dapatkan</span></a>
+      <a href="#s08" class="toc-item"><span class="toc-num">§ 08</span><span class="toc-label">Versus habit tracker</span></a>
+      <a href="#s09" class="toc-item"><span class="toc-num">§ 09</span><span class="toc-label">Mengapa 04:00 WIB?</span></a>
+      <a href="#s10" class="toc-item"><span class="toc-num">§ 10</span><span class="toc-label">Cocok untuk siapa?</span></a>
+      <a href="#s11" class="toc-item"><span class="toc-num">§ 11</span><span class="toc-label">Hukuman atau penjaga?</span></a>
+      <a href="#s12" class="toc-item"><span class="toc-num">§ 12</span><span class="toc-label">Contoh harian & tampilan</span></a>
+      <a href="#s13" class="toc-item"><span class="toc-num">§ 13</span><span class="toc-label">Bagaimana sistem mencatat</span></a>
+      <a href="#s14" class="toc-item"><span class="toc-num">§ 14</span><span class="toc-label">Inti</span></a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <a href="https://wa.me/6289517370017?text=Saya%20ingin%20masuk%20Silent%20Enforcer%20dan%20memulai%20covenant." class="sidebar-cta" target="_blank">Apply Sekarang →</a>
+    </div>
+  </aside>
+
+  <!-- ══════════ MAIN CONTENT ══════════ -->
+  <main class="content-wrap">
+    <div class="content-inner">
+
+      <!-- HEADER -->
+      <header class="doc-header">
+        <div class="doc-eyebrow">Silent Enforcer · Dokumen Resmi</div>
+        <h1 class="doc-title">The Covenant<br><em>Manual</em></h1>
+        <p class="doc-subtitle">Semua yang perlu diketahui sebelum masuk.</p>
+      </header>
+
+      <!-- ══════════════════════════
+           § 01 PRODUK INI APA
+      ══════════════════════════ -->
+      <section class="doc-section" id="s01">
+        <div class="section-num">§ 01</div>
+        <h2 class="section-heading">Ini sebenarnya produk apa?</h2>
+
+        <div class="doc-body">
+          <p>Silent Enforcer adalah <span class="doc-strong">sistem akuntabilitas perilaku</span>.</p>
+          <p>Bukan AI biasa. Bukan aplikasi habit tracker. Bukan komunitas motivasi. Bukan coach produktivitas.</p>
+          <p>Sistem ini dirancang untuk menjaga satu hal:</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          agar seseorang tidak terus-menerus menghilang dari hal yang sudah dia bilang penting.
+        </blockquote>
+
+        <div class="doc-body">
+          <p>Fokus utama sistem bukan membuat orang "termotivasi", tapi <strong style="color:var(--gold);">menjaga rutinitas bernilai tetap berjalan saat emosi berubah.</strong></p>
+          <p>Karena hidup jarang runtuh karena satu kegagalan besar. Hidup biasanya runtuh karena:</p>
+        </div>
+
+        <ul class="doc-list">
+          <li>terlalu banyak menunda,</li>
+          <li>terlalu sering restart,</li>
+          <li>terlalu mudah menghilang,</li>
+          <li>dan terlalu lama hidup tanpa jejak nyata.</li>
+        </ul>
+
+        <div class="doc-body">
+          <p>Produk ini dibangun melalui pengalaman, proses analisa, dan evaluasi panjang dari banyak sudut pandang: psikologi perilaku, pola avoidance manusia, loss aversion, mekanisme akuntabilitas, dan desain konsekuensi.</p>
+          <p>Setiap aturan, setiap batas waktu, setiap konsekuensi, dan setiap teks dalam sistem punya alasan psikologis yang disengaja.</p>
+          <p>Karena masalah utama kebanyakan orang sebenarnya bukan <em>"tidak tahu harus apa"</em>. Masalah utamanya:</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          mereka menghilang saat harus melakukannya.
+        </blockquote>
+
+        <div class="doc-body">
+          <p>Sistem ini dibangun untuk menyerang titik itu. Bukan dengan motivasi tapi dengan struktur, konsekuensi, dan sistem yang tetap berjalan meski mood berubah.</p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════
+           § 02 PLATFORM & CARA KERJA
+      ══════════════════════════ -->
+      <section class="doc-section" id="s02">
+        <div class="section-num">§ 02</div>
+        <h2 class="section-heading">Platform dan cara kerja harian</h2>
+
+        <div class="doc-body">
+          <p>Platform utama sistem adalah <span class="doc-strong">Telegram Bot</span>.</p>
+          <p>Setelah pembayaran diverifikasi via IG DM <span class="doc-gold">@wisdom.insight_</span>, pengguna akan menerima link akses Telegram.</p>
+        </div>
+
+        <div class="doc-body"><p>Setelah masuk, pengguna menjalani onboarding:</p></div>
+
+        <ol class="doc-steps">
+          <li>Menjalani onboarding</li>
+          <li>Menulis Visi</li>
+          <li>Menentukan Quest harian</li>
+          <li>Mengunci kontrak</li>
+          <li>Sistem mulai aktif</li>
+        </ol>
+
+        <div class="doc-body">
+          <p>Setelah itu, interaksi hariannya sangat sederhana. Setiap hari sebelum pukul <span class="doc-gold">04:00 WIB</span>, pengguna wajib mengirim satu kata:</p>
+        </div>
+
+        <div class="doc-terminal">
+          <div class="doc-terminal-header">
+            <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+            <span class="doc-terminal-title">silent-enforcer · input harian</span>
+          </div>
+          <div class="doc-terminal-body">
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-gray">Hari 07 | sebelum 04:00 WIB</span></div>
+            <div class="t-line"><span class="t-prompt">›</span><span class="t-jalan">jalan</span><span class="t-comment"> quest selesai hari ini.</span></div>
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-gold">✔ Tercatat. Streak: 7.</span></div>
+            <div class="t-line" style="margin-top:0.4rem;"><span class="t-prompt">$</span><span class="t-gray">Hari 08 | sebelum 04:00 WIB</span></div>
+            <div class="t-line"><span class="t-prompt">›</span><span class="t-stall">stall</span><span class="t-comment"> gagal, tapi jujur hadir.</span></div>
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-gold">✔ Tercatat. Kejujuran dihitung.<span class="t-cursor"></span></span></div>
+          </div>
+        </div>
+
+        <div class="doc-body">
+          <p>Tidak ada menu rumit. Tidak ada dashboard penuh fitur. Tidak ada chat panjang. Tidak ada motivasi harian. Hanya satu keputusan kecil setiap hari.</p>
+          <p>Namun justru dari titik kecil itu, arah hidup seseorang mulai berubah.</p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════
+           § 03 QUEST
+      ══════════════════════════ -->
+      <section class="doc-section" id="s03">
+        <div class="section-num">§ 03</div>
+        <h2 class="section-heading">Quest Aksi Minimum Harian</h2>
+
+        <div class="doc-body">
+          <p>Quest adalah <span class="doc-strong">Aksi Minimum Harian</span>. Bukan target besar. Bukan hasil akhir. Bukan "ubah hidup dalam 30 hari".</p>
+          <p>Quest adalah tindakan kecil yang tetap bisa dilakukan bahkan saat mood buruk, malas, sibuk, atau overthinking. Contoh:</p>
+        </div>
+
+        <ul class="doc-list">
+          <li>Pushup 10x</li>
+          <li>Baca 1 halaman</li>
+          <li>Tulis 1 paragraf</li>
+          <li>Tidak buka media sosial 1 jam</li>
+          <li>Catat 1 pengeluaran</li>
+        </ul>
+
+        <div class="doc-body">
+          <p>Tujuan Quest sengaja dibuat kecil di awal sebagai proses adaptasi. Karena hampir semua hal besar selalu dimulai dari benih kecil yang terus dijaga. Dari titik kecil itulah sistem menjaga kehadiran, kontinuitas, lalu perlahan meningkatkan kualitas konsistensi.</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          menjaga rantai kehadiran.
+        </blockquote>
+
+        <div class="doc-sub">Siapa yang menentukan Quest?</div>
+
+        <div class="doc-body">
+          <p>Pengguna sendiri. Sistem tidak menentukan hidup pengguna, tidak menentukan apa yang penting, tidak menentukan goal mana yang benar.</p>
+          <p>Namun ada aturan ketat. Quest harus:</p>
+        </div>
+
+        <ul class="doc-list">
+          <li>jelas dan konkret,</li>
+          <li>ada angka,</li>
+          <li>hasilnya YA / TIDAK,</li>
+          <li>dan cukup kecil untuk dikerjakan secara realistis.</li>
+        </ul>
+
+        <div class="doc-rule-box">
+          <div class="doc-rule-box-label">Aturan Kunci</div>
+          <p>Setelah Quest dikunci tidak ada negosiasi selama 30 hari.</p>
+        </div>
+
+        <div class="doc-sub">Apakah goal tiap orang bisa berbeda?</div>
+
+        <div class="doc-body">
+          <p>Ya. Setiap orang bisa punya visi berbeda, bidang hidup berbeda, tujuan berbeda, dan Quest berbeda. Sistem tidak peduli bidangnya olahraga, belajar, finansial, kreativitas, spiritualitas.</p>
+          <p>Yang dinilai hanya satu hal:</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          apakah kamu hadir terhadap kontrak kecil yang kamu buat sendiri.
+        </blockquote>
+      </section>
+
+      <!-- ══════════════════════════
+           § 04 FASE ENFORCEMENT
+      ══════════════════════════ -->
+      <section class="doc-section" id="s04">
+        <div class="section-num">§ 04</div>
+        <h2 class="section-heading">Fase Enforcement 30 hari pembentukan</h2>
+
+        <div class="doc-body">
+          <p>Enforcement adalah <span class="doc-strong">fase 30 hari pertama</span>. Fase pembentukan fondasi. Di sini sistem berjalan paling ketat.</p>
+        </div>
+
+        <ul class="doc-list">
+          <li>Keras terhadap ghosting</li>
+          <li>Penuh konsekuensi nyata</li>
+          <li>Tidak ada toleransi menghilang tanpa kabar</li>
+        </ul>
+
+        <div class="doc-rule-box">
+          <div class="doc-rule-box-label">Konsekuensi Kritis</div>
+          <p>Jika pengguna hilang <span style="color:var(--cream);font-weight:500;">3 hari berturut-turut</span> tanpa laporan apapun kontrak mati.</p>
+        </div>
+
+        <div class="doc-body">
+          <p>Fase ini bertujuan membangun fondasi kehadiran. Bukan kehadiran saat semangat tapi kehadiran saat alasan untuk berhenti tersedia. Itu yang membedakan rutinitas nyata dengan niat baik.</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          Sistem ini membedakan <strong style="color:var(--gold);">Stall</strong> dari <strong style="color:#CC4444;">X</strong>.<br>
+          <strong style="color:var(--gold);">Stall</strong> = hadir tapi gagal. <strong style="color:#CC4444;">X</strong> = menghilang total.<br>
+          Sistem jauh lebih keras terhadap menghilang.
+        </blockquote>
+      </section>
+
+      <!-- ══════════════════════════
+           § 05 FASE COMPANION
+      ══════════════════════════ -->
+      <section class="doc-section" id="s05">
+        <div class="section-num">§ 05</div>
+        <h2 class="section-heading">Fase Companion setelah lulus</h2>
+
+        <div class="doc-body">
+          <p>Companion adalah fase setelah lulus 30 hari. Untuk masuk, pengguna harus mencapai minimal:</p>
+        </div>
+
+        <div class="doc-rule-box">
+          <div class="doc-rule-box-label">Syarat Masuk Companion</div>
+          <p>≥ 60% Jalan selama 30 hari Enforcement.</p>
+        </div>
+
+        <div class="doc-body">
+          <p>Jika lulus: kontrak tidak mati, akses tetap aktif, pengguna masuk fase pendampingan jangka panjang. Companion bukan "mode santai" laporan harian tetap berjalan, mirror tetap ada.</p>
+          <p>Yang berubah adalah <span class="doc-strong">sifat tekanannya</span>.</p>
+        </div>
+
+        <div class="doc-compare">
+          <div class="doc-compare-col">
+            <div class="doc-compare-label enforcement">Enforcement</div>
+            <ul class="doc-list">
+              <li>Ketat, keras terhadap ghosting</li>
+              <li>Konsekuensi berat &amp; instan</li>
+              <li>Fokus: membangun fondasi</li>
+              <li>Ghost 3 hari → kontrak mati</li>
+            </ul>
+          </div>
+          <div class="doc-compare-col">
+            <div class="doc-compare-label companion">Companion</div>
+            <ul class="doc-list">
+              <li>Sistem lebih stabil</li>
+              <li>Tekanan survival diturunkan</li>
+              <li>Fokus: cermin jangka panjang</li>
+              <li>Kehadiran tetap dipantau</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="doc-body">
+          <p>Companion berfungsi sebagai cermin perilaku jangka panjang, penjaga kontinuitas, dan sistem yang membantu pengguna tetap berada di jalur yang searah dengan tujuan hidupnya. Bukan dengan ceramah tapi dengan data perilaku nyata yang terus tercatat.</p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════
+           § 06 EVALUASI & KONSEKUENSI
+      ══════════════════════════ -->
+      <section class="doc-section" id="s06">
+        <div class="section-num">§ 06</div>
+        <h2 class="section-heading">Evaluasi hari ke-31 dan konsekuensi kegagalan</h2>
+
+        <div class="doc-body">
+          <p>Hari ke-31, sistem mengevaluasi secara otomatis.</p>
+        </div>
+
+        <div class="doc-rule-box">
+          <div class="doc-rule-box-label">Hasil Evaluasi</div>
+          <p><span class="doc-gold">Jika rasio Jalan ≥ 60%</span> → pengguna lulus dan masuk Companion.</p>
+          <p><span style="color:var(--gray);">Jika di bawah 60%</span> → pengguna memilih: mengulang atau menutup kontrak.</p>
+          <p><span style="color:#CC4444;">Jika terlalu sering gagal</span> → akses bisa ditutup permanen.</p>
+        </div>
+
+        <div class="doc-sub">Kalau gagal atau kena permanent close bisa masuk lagi?</div>
+
+        <div class="doc-body"><p>Tergantung jenis kegagalannya.</p></div>
+
+        <ul class="doc-list">
+          <li><span class="doc-strong">Gagal karena ghosting</span> (hilang 3 hari tanpa laporan) masih bisa mendaftar lagi di batch berikutnya.</li>
+          <li><span class="doc-strong">Gagal karena stagnation berulang</span> (mengulang terus tapi standar tidak tercapai) akses bisa ditutup permanen.</li>
+          <li><span class="doc-strong">Alumni Companion yang kehilangan ritme</span> tersedia token pemulihan dan jalur recovery, namun semuanya terbatas.</li>
+        </ul>
+
+        <blockquote class="doc-blockquote">
+          konsekuensi harus nyata.
+        </blockquote>
+      </section>
+
+      <!-- ══════════════════════════
+           § 07 YANG PENGGUNA DAPATKAN
+      ══════════════════════════ -->
+      <section class="doc-section" id="s07">
+        <div class="section-num">§ 07</div>
+        <h2 class="section-heading">Yang pengguna dapatkan secara nyata</h2>
+
+        <div class="doc-body">
+          <p>Yang didapat pengguna bukan sekadar "fitur aplikasi". Yang sebenarnya dibeli pengguna adalah:</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          sistem eksternal yang tidak ikut berubah saat emosinya berubah.
+        </blockquote>
+
+        <div class="doc-body"><p>Yang didapat secara konkret:</p></div>
+
+        <ul class="doc-list">
+          <li>Struktur akuntabilitas yang tidak bisa dinegosiasi</li>
+          <li>Tekanan konsekuensi nyata</li>
+          <li>Continuity tracking harian</li>
+          <li>Mirror historis perilaku</li>
+          <li>Evaluasi perkembangan konsistensi dari siklus ke siklus</li>
+          <li>Laporan akhir siklus &amp; evaluasi kontinuitas</li>
+          <li>Streak faktual dan kontras perilaku dari waktu ke waktu</li>
+        </ul>
+
+        <div class="doc-body"><p>Yang tidak ada:</p></div>
+
+        <ul class="doc-list negative">
+          <li>Pujian</li>
+          <li>Validasi emosional</li>
+          <li>Manipulasi dopamine</li>
+          <li>Kata-kata motivasi kosong</li>
+        </ul>
+
+        <blockquote class="doc-blockquote">
+          Yang diterima pengguna hanyalah pantulan faktual dari perilakunya sendiri.
+        </blockquote>
+      </section>
+
+      <!-- ══════════════════════════
+           § 08 VERSUS HABIT TRACKER
+      ══════════════════════════ -->
+      <section class="doc-section" id="s08">
+        <div class="section-num">§ 08</div>
+        <h2 class="section-heading">Perbedaan dengan habit tracker biasa</h2>
+
+        <div class="doc-body">
+          <p>Habit tracker biasa fokus pada streak, grafik, badge, gamifikasi, reminder, dan visual progress. Kebanyakan bisa diabaikan tanpa konsekuensi.</p>
+          <p>Silent Enforcer dibangun dari arah sebaliknya.</p>
+        </div>
+
+        <div class="doc-compare">
+          <div class="doc-compare-col">
+            <div class="doc-compare-label enforcement" style="color:var(--gray);">Habit Tracker</div>
+            <ul class="doc-list">
+              <li>Badge, level, poin</li>
+              <li>Musik motivasi</li>
+              <li>Dashboard dopamine</li>
+              <li>Bisa diabaikan tanpa konsekuensi</li>
+              <li>Membantu <em>merasa</em> produktif</li>
+            </ul>
+          </div>
+          <div class="doc-compare-col">
+            <div class="doc-compare-label companion">Silent Enforcer</div>
+            <ul class="doc-list positive">
+              <li>Tidak ada badge atau reward</li>
+              <li>Tidak ada pujian</li>
+              <li>Konsekuensi nyata</li>
+              <li>Tidak bisa diabaikan tanpa harga</li>
+              <li>Memastikan <em>tindakan</em> nyata terjadi</li>
+            </ul>
+          </div>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          Manusia modern sudah terlalu banyak mengonsumsi motivasi, tapi terlalu sedikit membangun confrontation terhadap avoidance.
+        </blockquote>
+
+        <div class="doc-body">
+          <p>Habit tracker melacak kebiasaan. Silent Enforcer melacak satu hal saja:</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          apakah seseorang hadir atau menghilang.
+        </blockquote>
+      </section>
+
+      <!-- ══════════════════════════
+           § 09 MENGAPA 04:00 WIB
+      ══════════════════════════ -->
+      <section class="doc-section" id="s09">
+        <div class="section-num">§ 09</div>
+        <h2 class="section-heading">Mengapa cutoff harus 04:00 WIB?</h2>
+
+        <div class="doc-body">
+          <p>Karena sistem membutuhkan batas harian absolut, kalender perilaku yang jelas, dan titik evaluasi yang tidak bisa dinegosiasi.</p>
+          <p>04:00 WIB dipilih karena masih memberi ruang untuk orang yang tidur larut, tapi tetap memotong kebiasaan menunda.</p>
+          <p>Jika tidak ada batas keras, manusia cenderung berkata <em>"nanti saja"</em> dan kontrak mulai kehilangan makna.</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          Sistem yang terlalu fleksibel akhirnya tidak punya daya paksa psikologis.
+        </blockquote>
+
+        <div class="doc-terminal">
+          <div class="doc-terminal-header">
+            <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+            <span class="doc-terminal-title">hard cutoff harian</span>
+          </div>
+          <div class="doc-terminal-body">
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-gray">03:58 WIB</span></div>
+            <div class="t-line"><span class="t-prompt">›</span><span class="t-jalan">jalan</span></div>
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-gold">✔ Tepat waktu. Tercatat.</span></div>
+            <br>
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-gray">04:01 WIB</span></div>
+            <div class="t-line"><span class="t-prompt">›</span><span class="t-gray">jalan</span></div>
+            <div class="t-line"><span class="t-prompt">!</span><span class="t-x">Cutoff terlewat. Hari ini: X.</span></div>
+            <div class="t-line"><span class="t-prompt">!</span><span class="t-x">Ghosting 1/3.<span class="t-cursor"></span></span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════
+           § 10 COCOK UNTUK SIAPA
+      ══════════════════════════ -->
+      <section class="doc-section" id="s10">
+        <div class="section-num">§ 10</div>
+        <h2 class="section-heading">Sistem ini cocok untuk siapa?</h2>
+
+        <div class="doc-body"><p>Paling cocok untuk:</p></div>
+
+        <ul class="doc-list positive">
+          <li>Orang yang ingin mulai, mempertahankan, atau meningkatkan kualitas konsistensi</li>
+          <li>Orang yang sudah tahu apa yang harus dilakukan, tapi terus kehilangan ritme</li>
+          <li>Orang yang sering restart hidup</li>
+          <li>Frustrated builder orang yang overthinking dan sadar dirinya sering menghindar</li>
+          <li>Orang yang butuh struktur eksternal yang tidak peduli mood</li>
+        </ul>
+
+        <div class="doc-body"><p>Tidak cocok untuk:</p></div>
+
+        <ul class="doc-list negative">
+          <li>Orang yang mencari motivasi emosional</li>
+          <li>Orang yang ingin aplikasi produktivitas santai</li>
+          <li>Orang yang suka banyak negosiasi</li>
+          <li>Orang yang membutuhkan support mental intens</li>
+        </ul>
+
+        <blockquote class="doc-blockquote">
+          Produk ini dibuat untuk orang yang sudah lelah restart hidup dari nol dan siap diperlakukan sebagai orang dewasa yang bertanggung jawab terhadap inputnya sendiri.
+        </blockquote>
+      </section>
+
+      <!-- ══════════════════════════
+           § 11 HUKUMAN ATAU PENJAGA
+      ══════════════════════════ -->
+      <section class="doc-section" id="s11">
+        <div class="section-num">§ 11</div>
+        <h2 class="section-heading">Sistem ini menghukum atau membantu tetap hadir?</h2>
+
+        <div class="doc-body">
+          <p>Keduanya. Namun caranya berbeda dari kebanyakan sistem.</p>
+          <p>Silent Enforcer membedakan dua kondisi yang sepenuhnya berbeda:</p>
+        </div>
+
+        <div class="doc-compare">
+          <div class="doc-compare-col">
+            <div class="doc-compare-label companion" style="color:#E87A3A;font-size:1.6rem;letter-spacing:0.05em;">Stall</div>
+            <div class="doc-body"><p style="color:#FFFFFF;font-size:0.95rem;">Hadir tapi gagal. Jujur melaporkan kegagalan. Sistem <em>menghargai</em> kehadiran ini karena kejujuran masih tercatat.</p></div>
+          </div>
+          <div class="doc-compare-col">
+            <div class="doc-compare-label enforcement" style="font-size:1.6rem;letter-spacing:0.05em;">X</div>
+            <div class="doc-body"><p style="color:#FFFFFF;font-size:0.95rem;">Menghilang total. Tidak ada laporan apapun. Sistem paling keras terhadap kondisi ini.</p></div>
+          </div>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          gagal masih bisa dicatat. ketiadaan merusak semuanya.
+        </blockquote>
+
+        <div class="doc-body">
+          <p>Jadi sistem sebenarnya tidak menghukum kegagalan. Sistem menghukum <span class="doc-strong">penghindaran</span>.</p>
+          <p>Konsekuensi dibuat nyata supaya menghilang terasa lebih mahal daripada hadir. Karena manusia menjaga sesuatu lebih serius ketika ada yang dipertaruhkan.</p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════
+           § 12 CONTOH HARIAN & TAMPILAN
+      ══════════════════════════ -->
+      <section class="doc-section" id="s12">
+        <div class="section-num">§ 12</div>
+        <h2 class="section-heading">Contoh penggunaan harian dan tampilan produk</h2>
+
+        <div class="doc-body">
+          <p>Skenario: Quest pengguna adalah <span class="doc-gold">"Baca 1 halaman."</span></p>
+        </div>
+
+        <div class="doc-terminal">
+          <div class="doc-terminal-header">
+            <div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div>
+            <span class="doc-terminal-title">skenario penggunaan harian</span>
+          </div>
+          <div class="doc-terminal-body">
+            <div class="t-line"><span class="t-comment">// Pengguna membaca hari ini</span></div>
+            <div class="t-line"><span class="t-prompt">›</span><span class="t-jalan">jalan</span></div>
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-gold">✔ Quest selesai. Streak terjaga.</span></div>
+            <br>
+            <div class="t-line"><span class="t-comment">// Pengguna tidak membaca hari ini</span></div>
+            <div class="t-line"><span class="t-prompt">›</span><span class="t-stall">stall</span></div>
+            <div class="t-line"><span class="t-prompt">$</span><span class="t-gold">✔ Kejujuran dicatat. Besok tetap lapor.</span></div>
+            <br>
+            <div class="t-line"><span class="t-comment">// Pengguna tidak mengirim apapun</span></div>
+            <div class="t-line"><span class="t-prompt">!</span><span class="t-x">Tidak ada input. Hari ini: X.</span></div>
+            <div class="t-line"><span class="t-prompt">!</span><span class="t-x">Ghosting 1/3. Kontrak dalam risiko.<span class="t-cursor"></span></span></div>
+          </div>
+        </div>
+
+        <div class="doc-sub">Tampilan produk</div>
+
+        <div class="doc-body">
+          <p>Sengaja minimal. Tidak dibuat seperti aplikasi produktivitas modern penuh grafik. Karena sistem menghindari dopamine dashboard, quantified-self obsession, dan gamifikasi.</p>
+          <p>Yang ditampilkan hanya hal yang penting: status, hari aktif, severity, streak, dan mirror perilaku.</p>
+          <p>Visualnya dingin. Sederhana. Langsung. Karena sistem ini tidak dibuat untuk menghibur pengguna ia dibuat untuk menjaga perhatian tetap tertuju pada tindakan nyata.</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          confrontation, bukan entertainment.
+        </blockquote>
+      </section>
+
+      <!-- ══════════════════════════
+           § 13 BAGAIMANA SISTEM MENCATAT
+      ══════════════════════════ -->
+      <section class="doc-section" id="s13">
+        <div class="section-num">§ 13</div>
+        <h2 class="section-heading">Bagaimana sistem mencatat dan mengevaluasi perilaku?</h2>
+
+        <div class="doc-body">
+          <p>Silent Enforcer bekerja seperti cermin perilaku. Setiap tindakan kecil pengguna meninggalkan jejak. Dan dari jejak itu, sistem membaca:</p>
+        </div>
+
+        <ul class="doc-list">
+          <li>Apakah ritme mulai terbentuk</li>
+          <li>Apakah konsistensi mulai runtuh</li>
+          <li>Atau apakah seseorang mulai kembali menghilang dari hidupnya sendiri</li>
+        </ul>
+
+        <div class="doc-body">
+          <p>Pengguna tidak diberi sekadar angka. Yang dipantulkan sistem adalah <span class="doc-strong">pola</span>.</p>
+        </div>
+
+        <blockquote class="doc-blockquote">
+          Pola jauh lebih jujur daripada motivasi sesaat.
+        </blockquote>
+
+        <div class="doc-body">
+          <p>Seiring waktu, pengguna mulai melihat sesuatu yang jarang dimiliki banyak orang: rekam jejak nyata, kontinuitas, dan bukti faktual terhadap dirinya sendiri.</p>
+          <p>Bukan berdasarkan perasaan. Tapi berdasarkan apa yang benar-benar diulang setiap hari.</p>
+        </div>
+      </section>
+
+      <!-- ══════════════════════════
+           § 14 INTI SEDERHANA (CLOSING)
+      ══════════════════════════ -->
+      <section class="doc-section closing" id="s14">
+        <div class="section-num">§ 14</div>
+        <h2 class="section-heading" style="color:var(--gold);">Inti Silent Enforcer</h2>
+
+        <p class="closing-statement">
+          Silent Enforcer bukan sistem yang mencoba membuat hidup pengguna terasa nyaman.
+        </p>
+
+        <p class="closing-statement" style="color:var(--cream);margin-top:0;">
+          Ia dibuat untuk satu tujuan:
+        </p>
+
+        <blockquote class="closing-quote">
+          memastikan seseorang tidak terus-menerus menghilang dari hal yang sudah dia bilang penting.
+        </blockquote>
+
+        <div class="doc-body">
+          <p>Karena dalam banyak kasus, masa depan seseorang tidak runtuh karena kurang pengetahuan. Tapi karena terlalu sering:</p>
+        </div>
+
+        <ul class="closing-list">
+          <li>berhenti,</li>
+          <li>menunda,</li>
+          <li>menghindar,</li>
+          <li>lalu menghilang.</li>
+        </ul>
+
+        <div class="doc-body" style="margin-top:2.5rem;">
+          <p>Dan sistem ini dibangun untuk menyerang titik itu agar seseorang tetap hadir dan kualitas konsistensinya terus meningkat.</p>
+        </div>
+
+        <div class="closing-final">
+          Kamu sudah membaca keseluruhan dokumen ini.<br>
+          Tidak ada lagi yang disembunyikan. Tidak ada kejutan.<br>
+          Sekarang satu-satunya pertanyaan yang tersisa adalah milikmu.
+        </div>
+      </section>
+
+      <!-- ══ FINAL CTA ══ -->
+      <div class="doc-cta-wrap">
+        <div class="doc-cta-eyebrow">Batch 0 · 15 Slot</div>
+        <p class="doc-cta-sub">
+          15 slot. Kami membaca setiap pesan.<br>
+          Tidak semua diterima.
+        </p>
+        <a href="https://wa.me/6289517370017?text=Saya%20ingin%20masuk%20Silent%20Enforcer%20dan%20memulai%20covenant." class="btn-primary" target="_blank">
+          Apply Sekarang
+        </a>
+        <a href="index.html" class="doc-cta-back">← Kembali ke halaman utama</a>
+      </div>
+
+    </div><!-- /.content-inner -->
+  </main>
+
+</div><!-- /.site-layout -->
+
+<script>
+  // ══ READING PROGRESS BAR ══
+  window.addEventListener('scroll', function() {
+    var st = document.documentElement.scrollTop || document.body.scrollTop;
+    var sh = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+    document.getElementById('progress').style.width = (st / sh * 100) + '%';
+  });
+
+  // ══ SECTION REVEAL ON SCROLL ══
+  var sections = document.querySelectorAll('.doc-section');
+  var revealObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.06, rootMargin: '0px 0px -60px 0px' });
+  sections.forEach(function(s) { revealObs.observe(s); });
+
+  // ══ ACTIVE SIDEBAR ITEM ══
+  var tocItems = document.querySelectorAll('.toc-item');
+
+  function setActive(id) {
+    tocItems.forEach(function(item) {
+      var href = item.getAttribute('href');
+      item.classList.toggle('active', href === '#' + id);
+    });
+    // scroll active item into center of sidebar
+    var activeItem = document.querySelector('.sidebar .toc-item.active');
+    var sidebar = document.getElementById('sidebar');
+    if (activeItem && sidebar) {
+      var targetTop = activeItem.offsetTop - (sidebar.clientHeight / 2) + (activeItem.clientHeight / 2);
+      sidebar.scrollTo({ top: targetTop, behavior: 'smooth' });
+    }
+  }
+
+  var sectionObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) setActive(e.target.id);
+    });
+  }, { threshold: 0.25, rootMargin: '-15% 0px -60% 0px' });
+  sections.forEach(function(s) { sectionObs.observe(s); });
+
+  // ══ SMOOTH SCROLL FOR TOC LINKS ══
+  document.querySelectorAll('a[href^="#"]').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      var target = document.querySelector(this.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      var offset = window.innerWidth <= 960 ? 60 : 0;
+      window.scrollTo({ top: target.offsetTop - offset - 40, behavior: 'smooth' });
+      // close mobile toc if open
+      document.getElementById('mobileToc').classList.remove('open');
+    });
+  });
+
+  // ══ MOBILE TOC TOGGLE ══
+  document.getElementById('tocToggle').addEventListener('click', function() {
+    var toc = document.getElementById('mobileToc');
+    toc.classList.toggle('open');
+  });
+</script>
+</body>
+</html>
